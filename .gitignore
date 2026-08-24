@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+pytest-cache-files-*/
+.test-tmp/
+*.egg-info/
+.venv/
+node_modules/
+.pnpm-store/
+dist/
+.vite/
+*.tsbuildinfo
+*.db

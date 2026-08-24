@@ -1,0 +1,5 @@
+export type Step = { action: {action_id:string,type:string,timestamp:number,payload:Record<string,unknown>}, observation: {outcome:string,remaining_budget:number,transaction?:{amount_minor:number}}, utility:number }
+export type ComparisonStep = {index:number,action:Step['action'],v1_decision:string,v2_decision:string,state_diverged:boolean,decision_diverged:boolean,observation_diverged:boolean,v1_utility_minor:number,v2_utility_minor:number}
+export type AttackResponse = {campaign_id:string,result:{steps:Step[],utility_minor:number,replay_hash:string},comparison:{v1:{utility_minor:number},v2:{utility_minor:number},steps:ComparisonStep[],first_state_divergence:ComparisonStep|null,first_decision_divergence:ComparisonStep|null,first_observation_divergence:ComparisonStep|null,final_utility_divergence_minor:number}}
+export type Metrics = Record<string,number>
+export type Evaluation = {synthetic_warning:string,challenge_treatment:string,utility_coefficients:Record<string,number>,v1:{metrics:Metrics},v2:{metrics:Metrics}}
