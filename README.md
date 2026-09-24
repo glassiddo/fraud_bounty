@@ -1,105 +1,68 @@
-# Adversarial Fraud Testing Platform — durable Goal 1
+# Could bounty hunting work for fraud prevention?
 
-This repository contains the lean first vertical slice of a fraud-control regression lab. A transparent heuristic attacker exploits excessive trusted-device confidence in defender v1. The application then replays the identical open-loop campaign against a narrowly patched v2 and evaluates both versions on a labeled synthetic corpus.
+A fully fictional interactive portfolio case for fraud analyst applications. Northstar offers a $750 fictional bounty for a reproducible unauthorized order dispatched to a changed destination. The guided case takes about five minutes; playing is optional.
 
-This is a deterministic teaching and portfolio demonstration. It does **not** estimate real-world detection performance and contains no ML model or production data.
+## Run
 
-## What the demo proves
-
-- The pure engine replays ordered actions without wall-clock time or external calls.
-- The attacker sees a restricted projection, never defender rules, reasons, metadata, or complete state.
-- The planted campaign earns positive utility against v1 and negative utility against v2.
-- The patch challenges only a high-value purchase shortly after an address change; it does not block all purchases.
-- Synthetic benign-user effects remain visible alongside fraud prevention.
-
-## Run locally
-
-Requirements: Python 3.12+ and Node.js 20+.
-
-Start the API:
+Python 3.12+ and Node.js 20+ are required. In two terminals:
 
 ```powershell
 cd backend
 py -3.12 -m pip install -e ".[dev]"
-py -3.12 -m uvicorn app.main:app --reload
+py -3.12 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
-
-Start the dashboard in a second terminal:
 
 ```powershell
 cd frontend
-npm install
-npm run dev
+npm ci
+npm run dev -- --host 127.0.0.1
 ```
 
-Open `http://localhost:5173`. API documentation is at `http://localhost:8000/docs`.
+Open [the local case](http://127.0.0.1:5173). Set `VITE_API_URL` to override the default `http://localhost:8000/api`. This local demonstration is not deployed or authenticated.
 
-The API creates `backend/fraud_market.db` on first start. Override it with
-`FRAUD_MARKET_DATABASE_URL=sqlite:///absolute/path/demo.db` when isolation is useful.
+## The case
 
-Run all checks:
+1. **Challenge:** merchant problem, capabilities, costs, scope, reward and qualification.
+2. **Hunter trail:** two explicitly scripted recordings, or one persistent playable attempt. Only customer responses appear here.
+3. **Submission:** starting conditions, actions, evidence, claimed impact and assumptions.
+4. **Investigation:** explicit privilege reveal; timeline, linked synthetic records, qualification, actual control source and reproducible analysis.
+5. **Responses:** current policy, blunt address cooldown, and targeted verification; replay plus the same 100 legitimate customer records, with completion-rate sensitivity.
+6. **Methodology:** assumptions, related work, limits, and requirements for a real pilot.
+
+The accepted Studio 8 order dispatches at +120 simulated seconds and is confirmed unauthorized at +300. Collection point 14 initially succeeds at checkout but is cancelled at +30 after a simulated reputation response links it to two historical disputed accounts. Events are relative to checkout. Large time advances process scheduled events in order. A challenge or decline does not inherit baseline dispatch/dispute events.
+
+The targeted control challenges $1,000+ purchases within 60 simulated seconds of adding their shipping address. Movers and gift buyers overlap with the finding. Waiting until the window expires remains a demonstrated gap, not a claim of adaptive resistance.
+
+## Reproduction and checks
 
 ```powershell
 cd backend
 py -3.12 -m pytest -q -p no:cacheprovider
+py -3.12 -m app.bounty_analysis
 cd ..\frontend
-npm ci
+npm test
 npm run build
 ```
 
-## Architecture
+`bounty_analysis` prints JSON with the qualification calculation, replay hashes, all 100 customer records and decisions. Default results: 1 of 2 selected submissions qualifies; $920 modeled inventory/delivery loss; current/blunt/targeted legitimate declines 0/40/0 and challenges 0/0/15. At 80% legitimate completion, targeted verification has 3 expected abandonments. Its assumed operations cost is $32 for 16 challenges, including the submitted finding. None of these counts estimates production prevalence or savings.
 
-```text
-heuristic attacker -> attacker-facing service -> deterministic engine
-                                                |-> defender v1/v2
-                                                |-> restricted projection
-                                                |-> replay comparison
-                                                `-> synthetic evaluation
+## Implementation and persistence
 
-FastAPI exposes the service contract; React renders the same result. A single
-SQLAlchemy/SQLite repository stores fixture versions, campaigns, submitted actions,
-events, released observations, replay identities/results, and comparisons. The pure
-engine imports none of FastAPI, SQLAlchemy, or React.
-```
+- `backend/app/bounty.py`: deterministic delayed case, public projection, recordings and constructed cohort. Reuses the existing engine and `defenders/rules.py`.
+- `backend/app/bounty_api.py`: public hunter routes, separate merchant/evaluator routes, transactional SQLite persistence and idempotent action submissions.
+- `frontend/src/BountyApp.tsx`, `Hunter.tsx`, `Merchant.tsx`: presentation, customer-only play and privileged analytical views.
+- `backend/tests/test_bounty.py`, `frontend/src/BountyApp.test.tsx`: delayed outcomes, projection allowlists, replay consistency, budgets, persistence, idempotency, sensitivity, privilege gating and retry behavior.
 
-The engine under `backend/app/engine` has no FastAPI or frontend dependency. Defender decisions and attacker projection are separate. Money uses integer minor units; time is an integer logical timestamp.
+The API creates `backend/fraud_market.db`; `FRAUD_MARKET_DATABASE_URL` selects another SQLite file. Attempts use an additive `bounty_attempts` table. The browser stores the attempt ID and whether privileged content was opened. There is no reset within an attempt. Clearing browser storage or calling the create endpoint can create another attempt; this is not tamper-proof budget enforcement.
 
-## Demonstration workflow
+The original technical presentation, heuristic, campaign storage and endpoints are preserved. Open the privileged technical appendix from Methodology. Its immediate utility and six-row metrics are explicitly labeled legacy and are not used for the new case. The prior README is preserved in [docs/legacy-technical-note.md](docs/legacy-technical-note.md). Earlier outlines describe that legacy scope.
 
-1. `POST /api/attacker/run` enumerates three bounded candidates using only the
-   attacker-facing projection, saves the profitable v1 campaign, and compares it.
-2. `GET /api/campaigns/{id}` retrieves the ordered durable campaign.
-3. `POST /api/campaigns/{id}/replay/v2` replays exactly those open-loop actions.
-4. `GET /api/campaigns/{id}/comparison` retrieves state, decision, and visible-output
-   divergences independently.
-5. `GET /api/evaluation` returns labeled synthetic rows, metrics, challenge policy,
-   and visible utility coefficients.
+## Analytical limits
 
-For manual action submission, call `POST /api/scenario/reset`, then `POST /api/actions`.
-Payloads are discriminated by action type and reject extra fields. Public success and
-error shapes deliberately omit rule IDs, reasons, risk details, hidden history, and
-defender metadata. Swagger at `/docs` contains the exact contracts.
+Everything is synthetic. No real merchant, payment, account or fraud infrastructure is contacted. Recordings are authored, not agent-discovered. The reputation response tests downstream handling of a fixed signal, not a real provider's recognition capability.
 
-## Determinism and metric definitions
+Retail order value ($1,500), assumed merchant inventory/delivery loss ($920), illustrative net resale proceeds ($700), and fictional bounty ($750) remain separate. Challenge completion and $2 verification operations cost are assumptions. Sensitivity uses expected alternative branches, not replayed evidence of an attacker completing verification; completed verification adds an assumed five-minute fulfillment delay. No support-cost or ROI estimate is made.
 
-Replay identity includes fixture/version, transition engine, defender, disclosure and
-scoring versions, seed, and the ordered timestamped actions embedded in the result.
-Canonical JSON uses sorted keys and compact separators before SHA-256 hashing. Time is
-logical, money is integer minor units, and invalid/duplicate idempotency keys have
-recorded deterministic results.
+The cohort is deliberately constructed, not representative traffic. Privileged routes have no authentication: separate projections enforce the intended application flow, not secure isolation from source inspection or direct API use. Opening privileged material marks subsequent play as informed exploration.
 
-Challenges and reviews are interventions and count as caught fraud for recall.
-Challenges are not blocks; benign challenges count toward false intervention and
-benign challenge rates. Only blocks contribute to legitimate value blocked. Review
-volume remains separate. All utility coefficients are returned by the scenario and
-evaluation endpoints and shown in the dashboard.
-
-## Goal 1 boundary and limitations
-
-This remains one fixed synthetic scenario with a tiny explicit corpus and transparent,
-non-ML search. Its figures illustrate regression-test mechanics; they are not estimates
-of production fraud detection, attacker behavior, customer harm, or financial impact.
-There is no authentication, real data, payment execution, general scenario authoring,
-delayed feedback, campaign-family aggregation, queue, worker, or production deployment
-architecture. SQLite durability is intended for a local demonstration, not distributed
-operation or indefinite replay compatibility.
+Independent participation and rewards are the hypothesis. Automated fraud red-teaming is related work, including [Darwinium Beagle](https://www.darwinium.com/beagle); this case makes no unsupported novelty or comparative-effectiveness claim.

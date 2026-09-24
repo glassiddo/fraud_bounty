@@ -17,9 +17,17 @@ from app.replay import compare
 def to_actions(body: CampaignInput) -> list[Action]:
     return [Action(a.action_id, ActionType(a.type), a.timestamp, a.payload.model_dump()) for a in body.actions]
 
+def public_campaign_result(result: dict) -> dict:
+    """The heuristic receives only actions, projected observations, and released utility."""
+    return {"steps": [{"action": step["action"], "observation": step["observation"],
+                       "utility": step["utility"]} for step in result["steps"]],
+            "utility_minor": result["utility_minor"], "replay_hash": result["replay_hash"]}
+
 def create_app(database_url: str | None = None) -> FastAPI:
     app = FastAPI(title="Adversarial Fraud Testing Demo", version="1.0.0")
     app.state.repository, app.state.scenarios = Repository(database_url), {}
+    from app.bounty_api import routes
+    app.include_router(routes(app.state.repository.engine))
     app.add_middleware(CORSMiddleware, allow_origin_regex=r"http://(localhost|127\.0\.0\.1):\d+", allow_methods=["*"], allow_headers=["*"])
     @app.exception_handler(RequestValidationError)
     async def invalid(_: Request, exc: RequestValidationError):
@@ -42,9 +50,17 @@ def create_app(database_url: str | None = None) -> FastAPI:
         app.state.scenarios[body.scenario_id]=step.state; return step.observation
     @app.post("/api/attacker/run")
     def run_attacker():
-        actions, trace=discover(); result=run_campaign(actions,"v1"); result["search_trace"]=trace; comparison=compare(actions)
+        actions, trace=discover(); result=run_campaign(actions,"v1"); comparison=compare(actions)
         campaign_id=f'campaign-{result["replay_hash"][:12]}'; stored=app.state.repository.save(campaign_id,result,comparison)
-        return {"campaign_id":campaign_id,"campaign":[asdict(a) for a in actions],"result":result,"comparison":comparison,"stored":stored}
+        return {"campaign_id":campaign_id,"campaign":[asdict(a) for a in actions],
+                "search_trace":trace,"result":public_campaign_result(result),"stored":bool(stored)}
+    @app.get("/api/analyst/campaigns/{campaign_id}")
+    def analyst_campaign(campaign_id: str):
+        stored=get(campaign_id)
+        actions=[Action(a["action_id"],ActionType(a["type"]),a["timestamp"],a["payload"]) for a in stored["actions"]]
+        current, proposed=run_campaign(actions,"v1"),run_campaign(actions,"v2")
+        return {"campaign_id":campaign_id,"comparison":compare(actions),
+                "current_rule":current,"proposed_rule":proposed}
     @app.post("/api/campaigns")
     def save(body: CampaignInput):
         actions=to_actions(body); result=run_campaign(actions,"v1"); campaign_id=f'campaign-{result["replay_hash"][:12]}'

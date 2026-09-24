@@ -1,5 +1,10 @@
-export type Step = { action: {action_id:string,type:string,timestamp:number,payload:Record<string,unknown>}, observation: {outcome:string,remaining_budget:number,transaction?:{amount_minor:number}}, utility:number }
-export type ComparisonStep = {index:number,action:Step['action'],v1_decision:string,v2_decision:string,state_diverged:boolean,decision_diverged:boolean,observation_diverged:boolean,v1_utility_minor:number,v2_utility_minor:number}
-export type AttackResponse = {campaign_id:string,result:{steps:Step[],utility_minor:number,replay_hash:string},comparison:{v1:{utility_minor:number},v2:{utility_minor:number},steps:ComparisonStep[],first_state_divergence:ComparisonStep|null,first_decision_divergence:ComparisonStep|null,first_observation_divergence:ComparisonStep|null,final_utility_divergence_minor:number}}
-export type Metrics = Record<string,number>
-export type Evaluation = {synthetic_warning:string,challenge_treatment:string,utility_coefficients:Record<string,number>,v1:{metrics:Metrics},v2:{metrics:Metrics}}
+export type Action={action_id:string,type:string,timestamp:number,payload:Record<string,unknown>}
+export type Observation={action_id:string,action_type:string,timestamp:number,acknowledged:boolean,outcome:string,remaining_budget:number,error?:string,transaction?:{amount_minor:number,currency:string}}
+export type Candidate={candidate:number,submitted_actions:Action[],action_costs:number[],observations:Observation[],released_utility_minor:number,search_status:string}
+export type AttackResponse={campaign_id:string,campaign:Action[],search_trace:Candidate[],result:{steps:{action:Action,observation:Observation,utility:number}[],utility_minor:number,replay_hash:string}}
+export type ComparisonStep={index:number,action:Action,v1_decision:string|null,v2_decision:string|null,v1_observation:Observation,v2_observation:Observation,state_diverged:boolean,decision_diverged:boolean,observation_diverged:boolean,v1_utility_minor:number,v2_utility_minor:number}
+type Run={identity:{fixture_id:string,fixture_version:string,engine_version:string,defender_version:string,disclosure_policy_version:string,scoring_policy_version:string,seed:number},steps:{action:Action,event:{rule_id:string,internal_reason:string,decision:string},observation:Observation}[],replay_hash:string}
+export type AnalystResponse={campaign_id:string,current_rule:Run,proposed_rule:Run,comparison:{v1:{utility_minor:number},v2:{utility_minor:number},steps:ComparisonStep[],first_state_divergence:ComparisonStep|null,first_decision_divergence:ComparisonStep|null,first_observation_divergence:ComparisonStep|null,final_utility_divergence_minor:number}}
+export type EvaluationRow={case_id:string,label:string,amount_minor:number,decision:string}
+export type Evaluation={synthetic_warning:string,challenge_treatment:string,utility_coefficients:Record<string,number>,v1:{metrics:Record<string,number>,rows:EvaluationRow[]},v2:{metrics:Record<string,number>,rows:EvaluationRow[]}}
+export type Scenario={name:string,fixture_id:string,fixture_version:string,budget:number,currency:string}

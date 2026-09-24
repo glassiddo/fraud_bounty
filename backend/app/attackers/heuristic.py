@@ -3,7 +3,7 @@ from dataclasses import asdict
 from typing import Protocol
 from app.engine.fixtures import initial_state
 from app.engine.models import Action, ActionType
-from app.engine.runtime import execute_action, run_campaign
+from app.engine.runtime import ACTION_COSTS, execute_action, run_campaign
 
 class AttackerBoundary(Protocol):
     def submit(self, action: Action) -> dict: ...
@@ -33,8 +33,12 @@ def discover() -> tuple[list[Action], list[dict]]:
         actions = candidate_actions(wait, amount, f"search-{index + 1}")
         observations = [boundary.submit(action) for action in actions]
         utility = amount - 10_000 if observations[-1]["outcome"] == "allow" else -10_000
-        trace.append({"candidate": index + 1, "submitted_actions": [asdict(a) for a in actions], "observations": observations, "released_utility_minor": utility})
-        if utility > 0 and wait == 0 and amount >= 100_000:
+        profitable = utility > 0 and wait == 0 and amount >= 100_000
+        trace.append({"candidate": index + 1, "submitted_actions": [asdict(a) for a in actions],
+                      "action_costs": [ACTION_COSTS[a.type] for a in actions],
+                      "observations": observations, "released_utility_minor": utility,
+                      "search_status": "stopped: first profitable campaign" if profitable else "kept looking"})
+        if profitable:
             return actions, trace
     raise RuntimeError("bounded search found no positive campaign")
 

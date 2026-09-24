@@ -62,5 +62,6 @@ def test_heuristic_enumerates_public_observations_and_finds_profit():
     assert len(trace) == 3
     assert trace[-1]["released_utility_minor"] > 0
     assert actions[-1].payload["amount_minor"] == 150_000
+    assert trace[-1]["search_status"].startswith("stopped")
     serialized = str(trace)
     assert all(name not in serialized for name in PRIVATE)

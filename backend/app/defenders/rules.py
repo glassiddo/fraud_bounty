@@ -16,8 +16,10 @@ def decide(version: str, state: CampaignState, action: Action) -> DefenderResult
     if action.payload.get("device_id") != state.trusted_device_id:
         return DefenderResult(Decision.CHALLENGE, "device.unrecognized", "Device is not trusted")
 
-    active_address = state.addresses[state.active_address_id]
+    active_address = state.addresses[action.payload['address_id']]
     recently_changed = state.logical_time - active_address.added_at < RECENT_CHANGE_WINDOW
+    if version == "blunt" and active_address.address_id != "address_home" and state.logical_time - active_address.added_at < 86_400:
+        return DefenderResult(Decision.BLOCK, "address.cooldown", "Decline orders to addresses added in the last day")
     if version == "v2" and amount >= HIGH_VALUE and recently_changed:
         return DefenderResult(
             Decision.CHALLENGE,
