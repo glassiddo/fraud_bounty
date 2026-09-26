@@ -1,6 +1,6 @@
 # Could bounty hunting work for fraud prevention?
 
-A fully fictional interactive portfolio case for fraud analyst applications. Northstar offers a $750 fictional bounty for a reproducible unauthorized order dispatched to a changed destination. The guided case takes about five minutes; playing is optional.
+A fully fictional interactive portfolio case for fraud analyst applications. Northstar offers a $750 fictional bounty for a reproducible unauthorized order dispatched to a changed destination. The main story explores a platform hypothesis: if AI lowers root-cause investigation costs, independent search for unknown sequential gaps may become more valuable. The narrow playable example is a separate illustration.
 
 ## Run
 
@@ -22,12 +22,13 @@ Open [the local case](http://127.0.0.1:5173). Set `VITE_API_URL` to override the
 
 ## The case
 
-1. **Challenge:** merchant problem, capabilities, costs, scope, reward and qualification.
-2. **Hunter trail:** two explicitly scripted recordings, or one persistent playable attempt. Only customer responses appear here.
-3. **Submission:** starting conditions, actions, evidence, claimed impact and assumptions.
-4. **Investigation:** explicit privilege reveal; timeline, linked synthetic records, qualification, actual control source and reproducible analysis.
-5. **Responses:** current policy, blunt address cooldown, and targeted verification; replay plus the same 100 legitimate customer records, with completion-rate sensitivity.
-6. **Methodology:** assumptions, related work, limits, and requirements for a real pilot.
+1. **Why now?:** the author's hypothesis about AI and a possible shift in the fraud-testing bottleneck.
+2. **What hunters find:** sequential paths toward simulated economic gain, distinct from bounty rewards.
+3. **The platform:** a recorded transaction screen with customer-visible history and an explicit advance-time interaction, alongside the information the company withholds.
+4. **Company value:** additional coverage, cross-control evidence and reusable tests. An optional gated illustration retains the existing analysis.
+5. **Potential & limits:** incremental value, simulation fidelity, economics and related work.
+
+The proposed broad search platform is not implemented. The existing one-account, one-order exercise illustrates only a small stateful path. It does not measure attacker profit or demonstrate open-ended attacks.
 
 The accepted Studio 8 order dispatches at +120 simulated seconds and is confirmed unauthorized at +300. Collection point 14 initially succeeds at checkout but is cancelled at +30 after a simulated reputation response links it to two historical disputed accounts. Events are relative to checkout. Large time advances process scheduled events in order. A challenge or decline does not inherit baseline dispatch/dispute events.
 
@@ -50,12 +51,12 @@ npm run build
 
 - `backend/app/bounty.py`: deterministic delayed case, public projection, recordings and constructed cohort. Reuses the existing engine and `defenders/rules.py`.
 - `backend/app/bounty_api.py`: public hunter routes, separate merchant/evaluator routes, transactional SQLite persistence and idempotent action submissions.
-- `frontend/src/BountyApp.tsx`, `Hunter.tsx`, `Merchant.tsx`: presentation, customer-only play and privileged analytical views.
+- `frontend/src/BountyApp.tsx`, `TransactionPreview.tsx`, `Hunter.tsx`, `Merchant.tsx`: presentation, public transaction recording, customer-only play and privileged analytical views.
 - `backend/tests/test_bounty.py`, `frontend/src/BountyApp.test.tsx`: delayed outcomes, projection allowlists, replay consistency, budgets, persistence, idempotency, sensitivity, privilege gating and retry behavior.
 
 The API creates `backend/fraud_market.db`; `FRAUD_MARKET_DATABASE_URL` selects another SQLite file. Attempts use an additive `bounty_attempts` table. The browser stores the attempt ID and whether privileged content was opened. There is no reset within an attempt. Clearing browser storage or calling the create endpoint can create another attempt; this is not tamper-proof budget enforcement.
 
-The original technical presentation, heuristic, campaign storage and endpoints are preserved. Open the privileged technical appendix from Methodology. Its immediate utility and six-row metrics are explicitly labeled legacy and are not used for the new case. The prior README is preserved in [docs/legacy-technical-note.md](docs/legacy-technical-note.md). Earlier outlines describe that legacy scope.
+The original technical presentation, heuristic, campaign storage and endpoints are preserved. The earlier detailed React views remain in source, outside the shortened main reading path. Its immediate utility and six-row metrics are explicitly labeled legacy and are not used for the new case. The prior README is preserved in [docs/legacy-technical-note.md](docs/legacy-technical-note.md). Earlier outlines describe that legacy scope.
 
 ## Analytical limits
 
