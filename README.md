@@ -4,7 +4,9 @@ A fully fictional interactive portfolio case for fraud analyst applications. Nor
 
 ## Run
 
-Python 3.12+ and Node.js 20+ are required. In two terminals:
+The startup helper uses Python 3.12 and Node.js 20+. After installing dependencies, run `./start-demo.ps1` from the repository root to start both services in the background. It reuses services already running and writes startup logs to `.demo-logs/`. The backend also supports later Python versions when launched manually with the corresponding interpreter.
+
+For first-time setup or separate terminals:
 
 ```powershell
 cd backend
@@ -22,13 +24,12 @@ Open [the local case](http://127.0.0.1:5173). Set `VITE_API_URL` to override the
 
 ## The case
 
-1. **Why now?:** the author's hypothesis about AI and a possible shift in the fraud-testing bottleneck.
-2. **What hunters find:** sequential paths toward simulated economic gain, distinct from bounty rewards.
-3. **The platform:** a recorded transaction screen with customer-visible history and an explicit advance-time interaction, alongside the information the company withholds.
-4. **Company value:** additional coverage, cross-control evidence and reusable tests. An optional gated illustration retains the existing analysis.
-5. **Potential & limits:** incremental value, simulation fidelity, economics and related work.
+1. **The idea:** who authorized fraud bounties might attract, why outside testing could expose additional gaps, how AI complicates bounties, and the value of easier investigation.
+2. **The bounty environment:** company-provided accounts, cards, and histories; platform responsibilities; the hunter’s shopping experience; and limits around bank responses.
+3. **A possible setup:** an API-independent checkout with mixed products, quantities, custom recipients and destinations, supplied cards, and separate network/browser/cookie profiles. Integration with company testing infrastructure remains open.
+4. **Privacy & realism:** isolation, information leakage, de-identification that preserves decision-relevant relationships, and whether findings survive representative reproduction.
 
-The proposed broad search platform is not implemented. The existing one-account, one-order exercise illustrates only a small stateful path. It does not measure attacker profit or demonstrate open-ended attacks.
+The proposed broad search platform is not implemented. The checkout illustration reviews a combination without scoring it or submitting it to the backend. Network profiles, integration with company data, and earnings-based settlement are proposals. The existing one-account, one-order exercise retains its fixed fictional bounty and illustrates only a small stateful path. It does not measure attacker profit or demonstrate open-ended attacks.
 
 The accepted Studio 8 order dispatches at +120 simulated seconds and is confirmed unauthorized at +300. Collection point 14 initially succeeds at checkout but is cancelled at +30 after a simulated reputation response links it to two historical disputed accounts. Events are relative to checkout. Large time advances process scheduled events in order. A challenge or decline does not inherit baseline dispatch/dispute events.
 

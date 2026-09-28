@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { BountyApp } from './BountyApp'
 
@@ -9,30 +9,17 @@ it('starts with the bounty without loading privileged information', () => {
  expect(screen.getByRole('heading', { name: 'Could bounty hunting work for fraud prevention?' })).toBeVisible()
  expect(fetch).not.toHaveBeenCalled()
 })
-it('requires an explicit reveal before fetching merchant evidence', async () => {
+it('removes the optional evidence and challenge entry points', () => {
  render(<BountyApp />)
- fireEvent.click(screen.getByRole('button', { name: /04 Company value/ }))
- fireEvent.click(screen.getByRole('button', { name: 'Inspect one simulated finding' }))
+ expect(screen.queryByRole('button', { name: 'Inspect one simulated finding' })).not.toBeInTheDocument()
+ fireEvent.click(screen.getByRole('link', { name: /02 The bounty environment/ }))
+ expect(screen.queryByRole('button', { name: 'Try the optional challenge' })).not.toBeInTheDocument()
  expect(fetch).not.toHaveBeenCalled()
- fireEvent.click(screen.getByRole('button', { name: 'Reveal merchant evidence' }))
- await waitFor(() => expect(fetch).toHaveBeenCalled())
- expect(localStorage.getItem('northstar-informed')).toBe('yes')
- expect(await screen.findByRole('alert')).toHaveTextContent('Could not load')
-})
-
-it('keeps the main story short and the playable details optional', () => {
- render(<BountyApp />)
- expect(screen.getByRole('navigation', { name: 'Case chapters' }).querySelectorAll('button')).toHaveLength(5)
- expect(screen.queryByText('NORTHSTAR')).not.toBeInTheDocument()
- expect(screen.queryByText(/12 action credits/)).not.toBeInTheDocument()
- fireEvent.click(screen.getByRole('button', { name: /02 What hunters find/ }))
- expect(screen.getByRole('button', { name: 'Try the optional challenge' })).toBeVisible()
- expect(screen.queryByRole('button', { name: 'Start my attempt' })).not.toBeInTheDocument()
 })
 it('guards direct privileged links and remembers informed exploration', () => {
  location.hash = '#responses'
  render(<BountyApp />)
- expect(screen.getByRole('heading', { name: 'Find gaps the company has not tested.' })).toBeVisible()
+ expect(screen.getByRole('heading', { name: 'What would the company learn?' })).toBeVisible()
  expect(fetch).not.toHaveBeenCalled()
 })
 
@@ -48,19 +35,22 @@ it('can restore a saved attempt after a temporary API failure', async () => {
  expect(fetch).toHaveBeenLastCalledWith(expect.stringContaining('/attempts/saved-id'), undefined)
 })
 
-it('opens with the AI hypothesis without branding or reading-time labels', () => {
+it('keeps chapter navigation consistent after merging the introduction and company value', () => {
  render(<BountyApp />)
- expect(screen.queryByRole('banner')).not.toBeInTheDocument()
- expect(screen.queryByText(/minute|reading time/i)).not.toBeInTheDocument()
- expect(screen.getByText(/If AI makes root-cause analysis easier/)).toBeVisible()
+ fireEvent.click(screen.getByRole('link', { name: /Next: The bounty environment/ }))
+ expect(location.hash).toBe('#invitation')
+ expect(screen.getByRole('heading', { level: 1 })).toHaveFocus()
+ expect(screen.getByRole('link', { name: /02 The bounty environment/ })).toHaveAttribute('aria-current', 'step')
+ fireEvent.click(screen.getByRole('link', { name: /Previous/ }))
+ expect(location.hash).toBe('#challenge')
+ fireEvent.click(screen.getByRole('link', { name: /04 Privacy & realism/ }))
+ expect(screen.queryByRole('button', { name: 'End of discussion' })).not.toBeInTheDocument()
 })
 
-it('explains the platform boundary without loading privileged evidence', () => {
+it('opens the platform offline without the recording entry point', () => {
  location.hash = '#investigation'
  render(<BountyApp />)
- expect(screen.getByRole('heading', { name: 'What should the hunter be able to see?' })).toBeVisible()
- expect(screen.getByText('Hunter sees')).toBeVisible()
- expect(screen.getByText('Company retains')).toBeVisible()
- expect(fetch).toHaveBeenCalledTimes(1)
- expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/bounty/recorded/finding'), undefined)
+ expect(screen.getByRole('form')).toBeVisible()
+ expect(screen.queryByRole('button', { name: 'Open a recorded example of delayed outcomes' })).not.toBeInTheDocument()
+ expect(fetch).not.toHaveBeenCalled()
 })
