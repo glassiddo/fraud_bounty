@@ -40,8 +40,9 @@
 .transaction-history li{display:flex;align-items:baseline;gap:12px;font-size:13px;padding:8px 0;border-bottom:1px solid var(--line)}
 .transaction-history time{font:11px ui-monospace,monospace;color:var(--muted);min-width:38px}
 .transaction-private{align-self:start;padding:20px 0 0 20px;border-left:1px dashed #acbda3}
-.transaction-private h2{font-size:21px}
-.transaction-private p{font-size:13px}
+.transaction-private h2{font-size:21px;margin:8px 0 24px}
+.transaction-private h3{margin:22px 0 6px}
+.transaction-private p{font-size:13px;margin:0}
 .transaction-provenance{grid-column:1/-1;margin-top:-10px}
 @media(max-width:900px){.transaction-boundary{grid-template-columns:1fr}.transaction-private{padding:0 0 0 18px}.transaction-preview{padding:20px}}
 .platform-case .b-content{padding-top:45px}
@@ -65,7 +66,8 @@
 /* Keep the proposal readable at ordinary browser zoom. */
 .platform-case .hero h1{font-size:clamp(32px,3.5vw,46px)}
 .platform-case .b-heading h1{font-size:clamp(29px,3vw,38px)}
-.essay-section{max-width:820px;margin:34px 0;padding-top:20px;border-top:1px solid var(--line)}
+.platform-case .hero,.platform-case .b-heading,.essay-section,.platform-case .hypothesis{max-width:820px;box-sizing:border-box}
+.essay-section{margin:36px 0;padding-top:20px;border-top:1px solid var(--line)}
 .platform-case .essay-section h2{font-size:23px;margin-top:8px}
 .shop-catalog,.test-context{border:0;margin:20px 0;padding:0;min-width:0}
 .shop-catalog legend,.test-context legend{font-size:17px;font-weight:600;margin-bottom:12px}
@@ -90,7 +92,7 @@
 .platform-case .b-kicker{font-size:13px!important}
 .platform-case .perspective,.platform-case .story-flow>div>span{font-size:14px}
 .platform-case .b-content{padding-inline:40px}
-.platform-case .b-lead{font-size:18px;max-width:850px}
+.platform-case .b-lead{font-size:18px;max-width:820px}
 .platform-case p,.platform-case .b-card p,.platform-case details p,.platform-case .hypothesis p,.platform-case .story-flow p,.platform-case .transaction-private p,.platform-case .evidence-inset>p{font-size:16px;line-height:1.65}
 .platform-case .b-caption{font-size:14px!important}
 .platform-case .b-primary,.platform-case .b-text{font-size:15px!important}
@@ -102,7 +104,7 @@
 .platform-case h3,.platform-case .transaction-history-title{font-size:19px;line-height:1.4}
 .platform-case .b-split{gap:24px;align-items:stretch}
 .platform-case .b-card{padding:24px}
-.platform-case .hypothesis{max-width:none;margin-block:36px}
+.platform-case .hypothesis{margin:36px 0;padding:18px 0 18px 24px}
 .platform-case .b-footer{gap:18px;flex-wrap:wrap}
 .research-note,.state-proposal{border-top:1px solid var(--line);padding-top:22px;margin-block:36px}
 .checkout-boundary{grid-template-columns:minmax(0,1.65fr) minmax(240px,1fr)}
@@ -136,3 +138,19 @@
 .starting-accounts th{font:500 14px/1.5 Inter,system-ui,sans-serif}
 .starting-accounts thead th{font-size:16px;font-weight:600}
 .starting-accounts td{font-size:14px}
+
+.platform-case .working-hypothesis{background:#edf0e7;padding:24px}
+.combination-review dl{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));font-size:14px}
+.checkout-boundary details.test-context{margin:20px 0;padding:16px;max-width:none}
+
+/* Interaction and finishing details for the portfolio case. */
+.bounty h1,.bounty h2,.bounty h3{text-wrap:balance}
+.bounty button,.bounty a,.bounty select,.bounty summary{touch-action:manipulation}
+.bounty .b-page h1:focus-visible{outline:0;box-shadow:inset 4px 0 0 #94aa85;padding-left:12px}
+.segmented button:hover:not(:disabled),.play-controls>button:hover:not(:disabled),.b-text:hover:not(:disabled),.bounty summary:hover{background:#e4eade;color:var(--green)}
+.creator-credit{margin:0;padding:4px 0 24px;text-align:right;font-size:12px!important;color:var(--muted)}
+.conclusion{max-width:820px;box-sizing:border-box;margin:42px 0 12px;padding:26px 28px;background:#e7eddf;border:1px solid #c4d2ba}
+.conclusion .b-kicker{margin:0 0 12px}
+.conclusion>p:last-child{margin:0;color:var(--ink);font-size:18px;line-height:1.65}
+
+@media(max-width:760px){.platform-case .b-sidebar nav{scroll-snap-type:x proximity;scrollbar-width:thin;padding-bottom:8px}.platform-case .b-sidebar nav a{scroll-snap-align:start}.creator-credit{text-align:left}.conclusion{padding:22px}}

@@ -44,6 +44,7 @@ it('keeps chapter navigation consistent after merging the introduction and compa
  fireEvent.click(screen.getByRole('link', { name: /Previous/ }))
  expect(location.hash).toBe('#challenge')
  fireEvent.click(screen.getByRole('link', { name: /04 Privacy & realism/ }))
+ expect(screen.getByRole('region', { name: /conclusion/i })).toBeVisible()
  expect(screen.queryByRole('button', { name: 'End of discussion' })).not.toBeInTheDocument()
 })
 
@@ -51,6 +52,7 @@ it('opens the platform offline without the recording entry point', () => {
  location.hash = '#investigation'
  render(<BountyApp />)
  expect(screen.getByRole('form')).toBeVisible()
+ expect(screen.getByRole('complementary', { name: 'Decision flow' })).toBeVisible()
  expect(screen.queryByRole('button', { name: 'Open a recorded example of delayed outcomes' })).not.toBeInTheDocument()
  expect(fetch).not.toHaveBeenCalled()
 })
