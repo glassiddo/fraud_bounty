@@ -22,7 +22,7 @@ export function TransactionPreview() {
  const cart = catalog.filter(item => quantities[item.id] > 0)
  const total = cart.reduce((sum, item) => sum + item.price * quantities[item.id], 0)
  const cartDescription = cart.map(item => `${quantities[item.id]} × ${item.name}`).join(' + ')
- const [deliveryMethod, setDeliveryMethod] = useState('')
+ const [billingAddress, setBillingAddress] = useState('')
  const [destination, setDestination] = useState('')
  const [draft, setDraft] = useState<Record<string, string>>(() => Object.fromEntries(Object.keys({ ...checkoutChoices, ...contextChoices }).map(label => [label, ''])))
  function fields(choices: Record<string, string[]>) {
@@ -43,19 +43,19 @@ export function TransactionPreview() {
     </tbody></table></div>
    </details>
    <form aria-label="Build a test combination" onSubmit={event => event.preventDefault()}>
-    <fieldset className="test-context"><legend>Test setup outside checkout</legend><p className="b-caption"> These signals would come from the company’s usual collection mechanism. Hunters could inspect their own setup without knowing exactly which signals the company uses.</p><div className="checkout-fields">{fields(contextChoices)}</div></fieldset>
+    <fieldset className="test-context"><legend>Test setup outside checkout</legend><p className="b-caption"> These signals would come from the organization’s usual collection mechanism. Hunters could inspect their own setup without knowing exactly which signals the organization uses.</p><div className="checkout-fields">{fields(contextChoices)}</div></fieldset>
     <fieldset className="shop-catalog"><legend>Available products</legend>{catalog.map(item => <label className="field" key={item.id}><strong>{item.name}</strong><span className="product-price">{usd(item.price)} each</span><span>Quantity</span><input aria-label={`${item.name} quantity`} name={`${item.id}-quantity`} type="number" min="0" step="1" value={quantities[item.id]} onChange={event => { const quantity = Math.max(0, Math.trunc(Number(event.target.value)) || 0); setQuantities(previous => ({ ...previous, [item.id]: quantity })) }} /></label>)}</fieldset>
     <p className="cart-total">Cart: {cartDescription || 'Empty'} <strong>{usd(total)}</strong></p>
     <div className="checkout-fields"><label className="field">Recipient<input name="recipient" autoComplete="off" required value={recipient} onChange={event => { setRecipient(event.target.value) }} /></label>{fields(checkoutChoices)}
-     <label className="field">Delivery method<select name="delivery-method" value={deliveryMethod} onChange={event => { const method = event.target.value; setDeliveryMethod(method); setDestination('') }}><option value="">Choose…</option><option>Shipping</option><option>Pickup</option></select></label>
-     <label className="field">{deliveryMethod === 'Pickup' ? 'Pickup location' : 'Delivery address'}<input name="destination" autoComplete="off" required value={destination} onChange={event => { setDestination(event.target.value) }} /></label>
+     <label className="field">Billing address<input name="billing-address" autoComplete="off" required value={billingAddress} onChange={event => setBillingAddress(event.target.value)} /></label>
+     <label className="field">Delivery address<input name="destination" autoComplete="off" required value={destination} onChange={event => { setDestination(event.target.value) }} /></label>
     </div>
-    <p className="b-caption">Shipping and pickup have no fee in this illustration.</p>
+    <p className="b-caption">Shipping has no fee in this illustration.</p>
 
    </form>
-   <section className="combination-review" aria-label="Combination to test" aria-live="polite"><h3>Combination to test</h3><p>{cartDescription || 'No products selected'} · {usd(total)}</p><dl>{Object.entries({ 'Recipient': recipient, ...draft, 'Delivery method': deliveryMethod, [deliveryMethod === 'Pickup' ? 'Pickup location' : 'Delivery address']: destination }).filter(([, value]) => value).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>
+   <section className="combination-review" aria-label="Combination to test" aria-live="polite"><h3>Combination to test</h3><p>{cartDescription || 'No products selected'} · {usd(total)}</p><dl>{Object.entries({ 'Recipient': recipient, ...draft, 'Billing address': billingAddress, 'Delivery address': destination }).filter(([, value]) => value).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>
   </section>
-  <aside className="transaction-private" aria-label="Decision flow"><p className="b-kicker">DECISION FLOW</p><h2>From checkout to response</h2><h3>1 · Checkout input</h3><p>The platform sends the products, quantities, recipient, destination, payment token, delivery method, and calculated amount.</p><h3>2 · Background signals</h3><p>The company’s usual collection mechanism adds permitted connection, cookie, browser, device, and timing signals.</p><h3>3 · Company decision</h3><p>The decision system evaluates those inputs against earlier activity, linked entities, rules, and risk assessments. Its internal reasoning remains private.</p><h3>4 · Visible response</h3><p>The platform returns the order decision and later updates to the hunter, while preserving test history for subsequent attempts.</p></aside>
+  <aside className="transaction-private" aria-label="Decision flow"><p className="b-kicker">DECISION FLOW</p><h2>From checkout to response</h2><h3>1 · Checkout input</h3><p>The platform sends the products, quantities, recipient, billing address, delivery address, payment token, and calculated amount.</p><h3>2 · Background signals</h3><p>The organization’s usual collection mechanism adds permitted connection, cookie, browser, device, and timing signals.</p><h3>3 · Fraud decision</h3><p>The decision system evaluates those inputs against earlier activity, linked entities, rules, and risk assessments. Its internal reasoning remains private.</p><h3>4 · Visible response</h3><p>The platform returns the order decision and later updates to the hunter, while preserving test history for subsequent attempts.</p></aside>
  </div>
 }
 
@@ -68,7 +68,7 @@ export function RecordedTransactionPreview() {
    <label className="field">Destination to try<select name="recorded-destination" value={recording} onChange={event => setRecording(event.target.value)}><option value="finding">Studio 8</option><option value="apparent">Collection point 14</option></select></label>
    <RecordedActions key={recording} recording={recording} />
   </section>
-  <aside className="transaction-private"><p className="b-kicker">OUTSIDE THE HUNTER VIEW</p><h2>Company retains</h2><p>Internal rules, risk scores and private investigation records.</p><p>The hunter receives the response, not the reason behind it.</p></aside>
+  <aside className="transaction-private"><p className="b-kicker">OUTSIDE THE HUNTER VIEW</p><h2>Organization retains</h2><p>Internal rules, risk scores and private investigation records.</p><p>The hunter receives the response, not the reason behind it.</p></aside>
   <p className="b-caption transaction-provenance">Two scripted recordings. Choosing a destination restarts the walkthrough; it does not create or reset a live attempt. Simulated seconds compress operational delays.</p>
  </div>
 }

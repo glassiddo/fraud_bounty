@@ -19,7 +19,7 @@ it('removes the optional evidence and challenge entry points', () => {
 it('guards direct privileged links and remembers informed exploration', () => {
  location.hash = '#responses'
  render(<BountyApp />)
- expect(screen.getByRole('heading', { name: 'What would the company learn?' })).toBeVisible()
+ expect(screen.getByRole('heading', { name: 'What would the organization learn?' })).toBeVisible()
  expect(fetch).not.toHaveBeenCalled()
 })
 
@@ -44,7 +44,7 @@ it('keeps chapter navigation consistent after merging the introduction and compa
  fireEvent.click(screen.getByRole('link', { name: /Previous/ }))
  expect(location.hash).toBe('#challenge')
  fireEvent.click(screen.getByRole('link', { name: /04 Privacy & realism/ }))
- expect(screen.getByRole('region', { name: /conclusion/i })).toBeVisible()
+ expect(screen.getByRole('heading', { name: 'Can the environment be safe and representative?' })).toBeVisible()
  expect(screen.queryByRole('button', { name: 'End of discussion' })).not.toBeInTheDocument()
 })
 
